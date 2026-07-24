@@ -8,7 +8,7 @@ SRC_URI = " \
     file://docker-integrity-checker.sh \
 "
 
-S = "${UNPACKDIR}/sources"
+S = "${UNPACKDIR}"
 
 inherit systemd
 

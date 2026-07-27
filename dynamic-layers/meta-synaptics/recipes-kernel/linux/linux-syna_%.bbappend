@@ -22,7 +22,7 @@ SRC_URI:append:luna-sl1680 = " \
 # patchdir parameter above only serves to keep it out of that automatic series;
 # apply it for real here, directly against the nested repo.
 do_patch:append:luna-sl1680() {
-    ( cd ${S}/drivers/synaptics && git am ${WORKDIR}/0001-dhd_linux-fix-issue-which-freezes-sl1680-chips-board.patch )
+    ( cd ${S}/drivers/synaptics && git apply ${WORKDIR}/0001-dhd_linux-fix-issue-which-freezes-sl1680-chips-board.patch )
 }
 
 # Synaptics kernel recipe is overwriting INITRAMFS_IMAGE

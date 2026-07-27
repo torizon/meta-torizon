@@ -44,7 +44,6 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     mmc-utils \
     networkmanager \
     openssh-sftp-server \
-    ostree-customize-plymouth \
     ostree-devicetree-overlays \
     packagegroup-core-full-cmdline-multiuser \
     packagegroup-core-full-cmdline-utils \

@@ -8,7 +8,7 @@ SRC_URI = "file://docker-auto-prune.service \
     file://docker-auto-prune.timer.in \
 "
 
-S = "${UNPACKDIR}/sources"
+S = "${UNPACKDIR}"
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
 

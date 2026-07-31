@@ -26,8 +26,14 @@ INITRAMFS_EXTRA_KMODS:ti-soc = "\
     tc358768 \
     ti_sn65dsi83 \
     lontium_lt8912b \
-    sii902x \
 "
+# TI's AM62x/AM62P/AM62L Starter Kit EVMs use a SiI9022A bridge chip for
+# HDMI, unlike our Verdin/Aquila carrier boards (which use lt8912b) - so
+# this is only needed on the EVMs, not the whole ti-soc class.
+INITRAMFS_EXTRA_KMODS:append:am62xx-evm = " sii902x"
+INITRAMFS_EXTRA_KMODS:append:am62pxx-evm = " sii902x"
+INITRAMFS_EXTRA_KMODS:append:am62lxx-evm = " sii902x"
+
 # On BeagleY AI we need this extra module on top of TI modules
 INITRAMFS_EXTRA_KMODS:append:beagley-ai = " ite_it66121"
 

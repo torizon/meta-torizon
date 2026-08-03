@@ -10,8 +10,7 @@ SRC_URI = "\
     file://fw_setenv \
 "
 
-S = "${WORKDIR}/sources"
-UNPACKDIR = "${S}"
+S = "${UNPACKDIR}"
 
 inherit systemd
 

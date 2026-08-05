@@ -35,7 +35,7 @@ EXTRA_OEMESON += ' \
 	-Dntp-servers="${DEF_FALLBACK_NTP_SERVERS}" \
 '
 
-PACKAGE_WRITE_DEPS:append = " ${@bb.utils.contains('DISTRO_FEATURES','systemd','systemd-systemctl-native','',d)}"
+PACKAGE_WRITE_DEPS:append = " ${@bb.utils.contains('DISTRO_FEATURES','systemd','systemd-tools-native','',d)}"
 pkg_postinst:${PN}:append () {
 	if ${@bb.utils.contains('DISTRO_FEATURES','systemd','true','false',d)}; then
 		if [ -n "$D" ]; then

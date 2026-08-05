@@ -1,7 +1,7 @@
 SUMMARY = "NSS module which can read user information from files in the same format \
 as /etc/passwd and /etc/group stored in an alternate location"
 LICENSE = "LGPL-2.1-or-later"
-LIC_FILES_CHKSUM = "file://COPYING;md5=fb1949d8d807e528c1673da700aff41f"
+LIC_FILES_CHKSUM = "file://LICENSE;md5=4bf661c1e3793e55c8d1051bc5e0ae21"
 
 SRC_URI = "git://github.com/flatcar-linux/nss-altfiles.git;protocol=https;branch=main"
 
@@ -18,5 +18,10 @@ python __anonymous () {
 
 # The .so has to be installed under /lib for the libc to use it.
 EXTRA_OECONF = "--datadir=${libdir} --prefix=${libdir} --with-types=pwd,grp,spwd"
+
+# nss-altfiles-config is a pkg-config-style helper for querying build flags;
+# introduced upstream in 67441f9506 ("Update to glibc-2.43"), it wasn't
+# installed by older versions. Package it in -dev since it's a build-time tool.
+FILES:${PN}-dev += "${libdir}/bin/nss-altfiles-config"
 
 inherit autotools-brokensep

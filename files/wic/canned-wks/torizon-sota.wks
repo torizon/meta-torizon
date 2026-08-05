@@ -1,5 +1,0 @@
-# short-description: Create OTA-enabled raw image of Torizon OS
-# long-description: Create a single partition raw image with OSTree
-# physical sysroot as a payload.
-
-part / --source otaimage --ondisk mmcblk --fstype=ext4 --align 4096

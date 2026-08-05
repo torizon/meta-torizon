@@ -1,3 +1,0 @@
-define KFEATURE_DESCRIPTION "Kernel features required to support composefs fsverity"
-
-kconf non-hardware composefs-fsverity.cfg

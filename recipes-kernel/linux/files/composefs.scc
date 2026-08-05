@@ -1,3 +1,0 @@
-define KFEATURE_DESCRIPTION "Kernel features required to support composefs"
-
-kconf non-hardware composefs.cfg

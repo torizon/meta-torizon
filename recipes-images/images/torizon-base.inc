@@ -61,14 +61,6 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     zram \
 "
 
-CORE_IMAGE_BASE_INSTALL:append:tdx = " \
-    apparmor \
-    alsa-ucm-conf \
-    set-hostname \
-    tdx-info \
-    udev-toradex-rules \
-"
-
 # Packages normally installed via RRECOMMENDS that should be dropped to avoid
 # the presence of GPLv3 software in Torizon OS images.
 BAD_RECOMMENDATIONS_GPL_V3 = " \
@@ -102,53 +94,6 @@ CORE_IMAGE_BASE_INSTALL:append:sota = " \
     tzn-mqtt \
 "
 
-# Packages that install firmwares/kernel modules that must be present
-# in the rootfs. Firmware blobs, generally speaking, cannot be loaded
-# from containers as their kernel module counterparts generally expect
-# the files to be in an specific directory (generally /lib/firmware)
-
-CORE_IMAGE_BASE_INSTALL:append:mx8-nxp-bsp = " \
-    kernel-module-imx-gpu-viv \
-"
-
-CORE_IMAGE_BASE_INSTALL:append:am62xx = " \
-    ti-img-rogue-driver \
-"
-
-CORE_IMAGE_BASE_INSTALL:append:verdin-am62p = " \
-    ti-img-rogue-driver \
-"
-
-CORE_IMAGE_BASE_INSTALL:append:aquila-am69 = " \
-    ti-img-rogue-driver \
-    ti-edgeai-firmware \
-"
-
-# This does not compile succesfully on master
-#CORE_IMAGE_BASE_INSTALL:append:mx8mp-nxp-bsp = " \
-#    kernel-module-isp-vvcam \
-#"
-
-CORE_IMAGE_BASE_INSTALL:append:mx95-nxp-bsp = " \
-    ${@bb.utils.contains("DISTROOVERRIDES", "common-torizon-distro", "mali-imx", "",d)} \
-"
-
-CORE_IMAGE_BASE_INSTALL:append:verdin-imx95 = " \
-    mali-imx \
-"
-
-CORE_IMAGE_BASE_INSTALL:append:toradex-smarc-imx95 = " \
-    mali-imx \
-"
-
-# Userspace driver stack for the Arm Ethos-U microNPU integrated in the
-# i.MX93. The Cortex-M33 firmware (ethos-u-firmware) is already added via
-# MACHINE_FIRMWARE in the machine conf and the kernel driver (CONFIG_ETHOSU)
-# is built-in; this pulls in the userspace stack needed to dispatch inferences.
-CORE_IMAGE_BASE_INSTALL:append:mx93-nxp-bsp = " \
-    ethos-u-driver-stack \
-"
-
 nss_altfiles_set_users_groups () {
 	# Make a temporary directory to be used by pseudo to find the real /etc/passwd,/etc/group
 	pseudo_dir=${WORKDIR}/pseudo-rootfs${sysconfdir}
@@ -176,10 +121,6 @@ nss_altfiles_set_users_groups () {
 CORE_IMAGE_BASE_INSTALL:append = ' ${@bb.utils.contains("DISTRO_FEATURES", "stateless-system", "nss-altfiles", "",d)}'
 IMAGE_PREPROCESS_COMMAND:append = ' ${@bb.utils.contains("DISTRO_FEATURES", "stateless-system", "nss_altfiles_set_users_groups; ", "",d)}'
 PSEUDO_PASSWD:prepend = "${@bb.utils.contains('DISTRO_FEATURES', 'stateless-system', '${WORKDIR}/pseudo-rootfs:', '', d)}"
-
-# due to limited hardware resources, remove Colibri iMX6 Solo 256MB
-# from the list of supported IDs in the Tezi image
-TORADEX_PRODUCT_IDS:remove:colibri-imx6 = "0014 0016"
 
 CORE_IMAGE_BASE_INSTALL:append:cfs-signed = "\
     fsverity-utils \

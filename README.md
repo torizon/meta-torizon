@@ -1,76 +1,43 @@
-meta-toradex-torizon
-====================
+# meta-torizon
+
 Torizon OS is an embedded Linux distribution for the Torizon platform. It
 features, among other essential services, a container runtime and components
 for secure remote over-the-air (OTA) updates.
 
-This layer provides metadata to build two distinct Torizon OS flavors:
+`meta-torizon` is the distro layer: it defines the board-independent Torizon OS
+distribution configuration, image recipes, OTA/SOTA stack, container runtime,
+and OS policy.
+
+Board and BSP adaptations live in the companion
+[`meta-torizon-bsp`](https://github.com/torizon/meta-torizon-bsp) layer, which
+depends on this layer. Together, the two layers provide the metadata for these
+Torizon OS flavors:
+
 - **Torizon**: built on top of Toradex's BSP.
-- **Common Torizon**: built on top of BSPs from third-parties.
+- **Common Torizon**: built on top of BSPs from third parties.
 
-Building Torizon OS
-===================
-To build Torizon OS, see the following article:
+## Building and documentation
 
-https://developer.toradex.com/knowledge-base/build-torizoncore
+Build instructions for Torizon and Common Torizon, including the complete set
+of machine-specific guides, are maintained in the
+[`meta-torizon-bsp` README](https://github.com/torizon/meta-torizon-bsp#building-torizon-os).
 
-Building Common Torizon OS
-==========================
-Start with the machine-specific build instructions below:
+For an overview of the responsibilities and integration between the two layers,
+see [Architecture & Migration](https://github.com/torizon/meta-torizon-bsp/blob/master/docs/architecture-migration.md).
 
-| SoC Vendor         | Platform / Board                            | Documentation                                | Pre-built images                                                                                                                                                                                                                                                                           |
-| :----------------- | :------------------------------------------ | :------------------------------------------- | :----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Intel              | x86-64                                      | [README-x86.md](./docs/README-x86.md)        | [Common Torizon OS for x86 Machines](https://developer.toradex.com/software/toradex-embedded-software/toradex-download-links-torizon-linux-bsp-wince-and-partner-demos/#torizon-os-for-x86-machines)                                                                                       |
-| NVIDIA             | Jetson Orin Nano                            | [README-nvidia.md](./docs/README-nvidia.md)  | N/A                                                                                                                                                                                                                                                                                        |
-| NXP                | i.MX 95 Verdin EVK and FRDM i.MX 93         | [README-nxp.md](./docs/README-nxp.md)        | One-off Common Torizon images available for [i.MX 95 Verdin EVK](https://artifacts.toradex.com/artifactory/legacy-oe-prod-frankfurt/i.MX95_EVKImage-Torizon_OS_7.0.0/) and [FRDM i.MX 93](https://artifacts.toradex.com/artifactory/legacy-oe-prod-frankfurt/i.MX93_FRDM-Torizon_OS_7.5.0/)|
-| Renesas            | RZ/V2L EVKIT                                | [README-rzv2l.md](./docs/README-rzv2l.md)    | N/A                                                                                                                                                                                                                                                                                        |
-| STMicroelectronics | STM32MP1/STM32MP2                           | [README-stm32mp.md](./docs/README-stm32mp.md)| N/A                                                                                                                                                                                                                                                                                        |
-| Synaptics          | Astra SL1680/Luna SL1680                    | [README-syn.md](./docs/README-syn.md)        | N/A                                                                                                                                                                                                                                                                                        |
-| Texas Instruments  | AM62x/AM62L/AM62P SK EVM and BeagleY-AI     | [README-ti.md](./docs/README-ti.md)          | [Common Torizon OS for TI Machines](https://developer.toradex.com/software/toradex-embedded-software/toradex-download-links-torizon-linux-bsp-wince-and-partner-demos/#torizon-os-for-ti-machines)                                                                                         |
+For contribution guidelines specific to this repository, see
+[CONTRIBUTING.md](./docs/CONTRIBUTING.md).
 
-If your machine is not listed above or you prefer a manual setup, you can follow these generic steps:
+## Reporting issues
 
-1. **Download the layers** for the `scarthgap` branch:
+If you encounter an issue while using or developing Torizon OS, open an issue
+in the relevant layer repository or create a Technical Support topic in the
+[Toradex Developer Community](https://community.toradex.com/).
 
-    ```bash
-    $ git clone https://github.com/torizon/meta-toradex-torizon.git -b scarthgap-7.x.y
-    $ git clone https://github.com/uptane/meta-updater.git -b scarthgap
-    $ git clone https://git.yoctoproject.org/git/meta-virtualization -b scarthgap
-    ```
+## License
 
-2. **Set up the environment**: Source the appropriate script your BSP uses to set up the build environment.
-3. **Configure your build**:
-
-- Add the `meta-toradex-torizon` layer and its dependencies to your `conf/bblayers.conf` file.
-- Edit `conf/local.conf` to set the `MACHINE` you wish to build.
-- In the same file, set the distribution to `DISTRO='common-torizon'`.
-
-4. **Build an image**: Start building one of the available Torizon images:
-
-- `torizon-docker`
-- `torizon-minimal`
-- `torizon-podman` (**experimental**)
-
-Reporting Issues
-================
-If you encounter any issues when using or developing Torizon OS, you can open a new issue in this repository's issue tracker or create a new Technical Support topic in the [Toradex Developer Community](https://community.toradex.com/).
-
-Contributing
-============
-You may also choose to actively fix issues and bugs or possibly port Common Torizon on new devices. For more details, see [CONTRIBUTING.md](./docs/CONTRIBUTING.md).
-
-See [docs/setup-environment.md](./docs/setup-environment.md) for how the build-environment setup scripts work and how to add support for a new vendor or board.
-
-Development Process
-===================
-Torizon is maintained by the Toradex R&D team. Development happens in this repository, including issues, PRs, and discussions. This repository is then used by our internal CI/CD infrastructure.
-
-We also track issues, bugs and features internally. Because of this, some of the commits and pull requests made by Toradex team members may contain references to internal ticket identifiers e.g. 'Related-to: TOR-3705'.
-
-License
-=======
-All metadata is MIT licensed unless otherwise stated. Source code and
-binaries included in tree for individual recipes is under the LICENSE
-stated in each recipe (.bb file) unless otherwise stated.
+All metadata is MIT licensed unless otherwise stated. Source code and binaries
+included in the tree for individual recipes are under the license stated in
+each recipe (`.bb` file), unless otherwise stated.
 
 This README document is Copyright (C) 2019-2025 Toradex AG.

@@ -94,3 +94,6 @@ def arm_tune_handler(d):
     return tune
 
 DEFAULTTUNE:tzn := "${@arm_tune_handler(d)}"
+
+# Apply BSP overrides after selecting the Common Torizon distro family.
+require conf/machine/include/bsp-machine-overrides.inc

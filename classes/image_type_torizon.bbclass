@@ -22,18 +22,8 @@ python adjust_tezi_artifacts() {
     d.setVar('TEZI_ARTIFACTS', artifacts)
 }
 
-def is_hab_signed_bootloader_and_fit_enabled(d):
-    if d.getVar('TDX_IMX_HAB_ENABLE') == '1' and d.getVar('UBOOT_SIGN_ENABLE') == '1':
-        return '1'
-
-    return '0'
-
 TCB_SIGNING_FILES_TARBALL = "tcb_signing_files.tar.gz"
 TCB_SIGNING_SUPPORT ?= "0"
-TCB_SIGNING_SUPPORT:verdin-imx8mp ?= "${@is_hab_signed_bootloader_and_fit_enabled(d)}"
-TCB_SIGNING_FILELIST:verdin-imx8mp ?= "uboot_config bl31* lpddr4_pmu_train_* u-boot.dtb u-boot-nodtb.bin spl/ u-boot-dtbs/"
-TCB_SIGNING_SUPPORT:verdin-imx8mm ?= "${@is_hab_signed_bootloader_and_fit_enabled(d)}"
-TCB_SIGNING_FILELIST:verdin-imx8mm ?= "uboot_config bl31* lpddr4_pmu_train_* u-boot.dtb u-boot-nodtb.bin spl/ u-boot-dtbs/"
 
 pack_tcb_signing_binaries_in_teziimg() {
     if [ "${TCB_SIGNING_SUPPORT}" != "1" ]; then
@@ -79,39 +69,6 @@ python add_signing_files_to_tezi_artifacts() {
 TEZI_IMAGE_TEZIIMG_PREFUNCS:append = " add_signing_files_to_tezi_artifacts adjust_tezi_artifacts"
 
 require torizon_base_image_type.inc
-
-
-UBOOT_BINARY_OTA:apalis-imx6 = "u-boot-with-spl.imx"
-UBOOT_BINARY_OTA:colibri-imx6 = "u-boot-with-spl.imx"
-UBOOT_BINARY_OTA:colibri-imx6ull-emmc = "u-boot.imx"
-UBOOT_BINARY_OTA:colibri-imx7-emmc = "u-boot.imx"
-UBOOT_BINARY_OTA:apalis-imx8 = "imx-boot"
-UBOOT_BINARY_OTA:colibri-imx8x = "imx-boot"
-UBOOT_BINARY_OTA:verdin-imx8mm = "imx-boot"
-UBOOT_BINARY_OTA:verdin-imx8mp = "imx-boot"
-UBOOT_BINARY_OTA:verdin-am62 = " \
-    firmware-verdin-am62-gp.bin:gp \
-    firmware-verdin-am62-hs-fs.bin:hs-fs \
-    firmware-verdin-am62-hs.bin:hs \
-"
-UBOOT_BINARY_OTA:verdin-am62p = " \
-    firmware-verdin-am62px-hs-fs.bin:hs-fs \
-    firmware-verdin-am62px-hs.bin:hs \
-"
-UBOOT_BINARY_OTA:aquila-am69 = "u-boot.img"
-UBOOT_BINARY_OTA:toradex-smarc-imx8mp = "u-boot.bin"
-UBOOT_BINARY_OTA:toradex-smarc-imx95 = "u-boot.bin"
-UBOOT_BINARY_OTA:qemuarm64 = "u-boot.bin"
-
-# disable for now while we investigate build issues
-UBOOT_BINARY_OTA_IGNORE:aquila-am69 = "1"
-UBOOT_BINARY_OTA_IGNORE:aquila-imx95 = "1"
-UBOOT_BINARY_OTA_IGNORE:toradex-smarc-imx8mp = "1"
-UBOOT_BINARY_OTA_IGNORE:toradex-smarc-imx95 = "1"
-UBOOT_BINARY_OTA_IGNORE:verdin-imx95 = "1"
-UBOOT_BINARY_OTA_IGNORE:genericx86-64 = "1"
-UBOOT_BINARY_OTA_IGNORE:lino-imx93 = "1"
-UBOOT_BINARY_OTA_IGNORE:toradex-osm-imx93 = "1"
 
 TEZI_IMAGE_TEZIIMG_PREFUNCS:prepend = "gen_torizon_prov_data pack_tcb_signing_binaries_in_teziimg "
 

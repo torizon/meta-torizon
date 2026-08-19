@@ -10,8 +10,6 @@ SRC_URI:append = " \
     file://torizon-recover \
 "
 
-SRC_URI:append:genericx86-64 = " file://0001-rules-whitelist-hd-devices.patch"
-
 PACKAGECONFIG:append = " resolved networkd"
 RRECOMMENDS:${PN}:remove = "os-release"
 

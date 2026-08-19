@@ -12,10 +12,6 @@ SRC_URI:append:cfs-support = "\
     file://80-composefs.conf \
 "
 
-SRC_URI:remove:tegra = "\
-    file://0002-only-scan-for-block-devices.patch \
-"
-
 PACKAGES:append = " \
     initramfs-module-plymouth \
     initramfs-module-kmod \
@@ -41,7 +37,15 @@ FILES:initramfs-module-composefs:append:cfs-signed = "\
     ${sysconfdir}/ostree/initramfs-root-binding.key \
 "
 
-require initramfs-graphics.inc
+# Kernel modules to be loaded from the initramfs, e.g. to bring up the splash
+# screen. The per-machine lists live in meta-torizon-bsp; order is significant
+# there, since modules are probed in the order they are added to this variable.
+INITRAMFS_EXTRA_KMODS ?= ""
+
+def get_initramfs_kmods(d):
+    kmods = d.getVar("INITRAMFS_EXTRA_KMODS").split()
+    build_modules = [f"kernel-module-{m.replace('_', '-')}" for m in kmods]
+    return " ".join(build_modules)
 
 SUMMARY:initramfs-module-kmod = "initramfs support for loading kernel modules"
 FILES:initramfs-module-kmod = "\

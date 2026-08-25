@@ -25,34 +25,11 @@ SDK_VERSION = "${TDX_RELEASE}"
 
 TARGET_VENDOR = "-tzn"
 
-# create etc/build in the rootfs
-INHERIT += "image-buildinfo"
-
-# Log information on images and packages
-INHERIT += "buildhistory"
-BUILDHISTORY_COMMIT = "1"
-
-IMAGE_LINGUAS ?= "en-us"
-
-# Some Toradex recipes like linux-toradex, u-boot-toradex,
-# device-tree-overlays are appending SCM hashes to PV, version
-# numbers going backwards are not a problem as we don't provide
-# binary feeds.
-#
-# This avoids some annoying errors as follows:
-# | QA Issue: Package version went backwards which would break package feeds
-ERROR_QA:remove = "version-going-backwards"
-
 DISTRO_FEATURES:append = " pam systemd usrmerge"
 DISTRO_FEATURES:remove = "sysvinit ptest"
 VIRTUAL-RUNTIME_init_manager = "systemd"
-PACKAGECONFIG:append:pn-systemd = " serial-getty-generator"
-PACKAGECONFIG:append:pn-qemu-native = " libusb"
 
 PREFERRED_RPROVIDER_network-configuration = "networkmanager"
-
-# keep the dtb vendor directories in fitimage node names
-KERNEL_DTBVENDORED = "1"
 
 # Defines the root home directory as /root, as required by systemd.
 ROOT_HOME = "/root"

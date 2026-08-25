@@ -77,3 +77,27 @@ TDX_SECBOOT_REQUIRED_BOOTARGS:tdx-signed = "${TOS_SECBOOT_REQUIRED_BOOTARGS}"
 # Export some extra build information (takes place if class image-buildinfo is used).
 TDX_SIGNING_CLASS ?= ""
 IMAGE_BUILDINFO_VARS:append = " TDX_SIGNING_CLASS OVERRIDES"
+
+# create etc/build in the rootfs
+INHERIT += "image-buildinfo"
+
+# Log information on images and packages
+INHERIT += "buildhistory"
+BUILDHISTORY_COMMIT = "1"
+
+IMAGE_LINGUAS ?= "en-us"
+
+# Some Toradex recipes like linux-toradex, u-boot-toradex,
+# device-tree-overlays are appending SCM hashes to PV, version
+# numbers going backwards are not a problem as we don't provide
+# binary feeds.
+#
+# This avoids some annoying errors as follows:
+# | QA Issue: Package version went backwards which would break package feeds
+ERROR_QA:remove = "version-going-backwards"
+
+PACKAGECONFIG:append:pn-systemd = " serial-getty-generator"
+PACKAGECONFIG:append:pn-qemu-native = " libusb"
+
+# keep the dtb vendor directories in fitimage node names
+KERNEL_DTBVENDORED = "1"

@@ -1,5 +1,12 @@
-require conf/distro/include/tdx-base.inc
-require base-distro.inc
+# Set the default package class before requiring Poky as it also
+# specifies a default. This allows us to keep the override semantics.
+PACKAGE_CLASSES ?= "package_ipk"
+
+require conf/distro/poky.conf
+require conf/distro/include/arm-defaults.inc
+require conf/distro/include/versioning.inc
+require conf/distro/include/base-distro.inc
+require conf/distro/include/tdx-bsp.inc
 
 IMAGE_CLASSES:append = " image_type_torizon"
 IMAGE_CLASSES:remove = "image_type_tezi"

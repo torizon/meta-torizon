@@ -1,7 +1,14 @@
+# TDX_BUILDNBR/TDX_PURPOSE stay as weak defaults since CI overrides them
+# per-build via local.conf.
 TDX_BUILDNBR ?= "0"
 TDX_PURPOSE ?= "Testing"
 
-TDX_MAJOR ?= "7"
+# 0.0.0 is the trunk (unreleased) identity, shared by Torizon OS and
+# Common Torizon alike. When cutting a numbered release branch, override
+# these explicitly for that branch's real version (as scarthgap-7.x.y
+# already does) -- otherwise OSTREE_BRANCHNAME and every deployed image
+# artifact name will carry "0" instead of the real number.
+TDX_MAJOR ?= "0"
 TDX_MINOR ?= "0"
 TDX_PATCH ?= "0"
 

@@ -44,6 +44,8 @@ ROOT_DEVICE=$(realpath ${ROOT_DEVICE})
 INFO=$(udevadm info --query=property --name=${ROOT_DEVICE})
 PART_ENTRY_NUMBER=$(echo "${INFO}" | grep '^ID_PART_ENTRY_NUMBER=' | cut -d'=' -f2)
 PART_ENTRY_NAME=$(echo "${INFO}" | grep '^ID_PART_ENTRY_NAME=' | cut -d'=' -f2 || true)
+PART_ENTRY_UUID=$(echo "${INFO}" | grep '^ID_PART_ENTRY_UUID=' | cut -d'=' -f2 || true)
+PART_ENTRY_TYPE=$(echo "${INFO}" | grep '^ID_PART_ENTRY_TYPE=' | cut -d'=' -f2 || true)
 
 # in case the root device is not on a partitioned media
 if [ "x$PART_ENTRY_NUMBER" = "x" ]; then
@@ -56,25 +58,70 @@ PART_TABLE_TYPE=$(echo "${INFO}" | grep '^ID_PART_TABLE_TYPE=' | cut -d'=' -f2)
 DEVICE=$(udevadm info --query=path --name=${ROOT_DEVICE} | awk -F'/' '{print $(NF-1)}')
 DEVICE="/dev/${DEVICE}"
 
-SIZE=$(blockdev --getsz ${DEVICE})
-TYPE="p\n"
 if [ "$PART_TABLE_TYPE" = "gpt" ]; then
-	${SGDISK} -e ${DEVICE}
-	SIZE=$(($SIZE - 33)) # the GPT end of disk is 34 sectors
-	TYPE=""
-fi
-
-# Use fdisk to repartition
-# fdisk uses a ram image of the parition table until a write is performed
-# so the sequence is to delete the partition and recreate it at the same
-# starting point but making it the size of the available disk.
-#
-END=$((${SIZE} - 1))
-PARTOF=$(echo "${INFO}" | grep '^ID_PART_ENTRY_OFFSET=' | cut -d'=' -f2)
-echo -e "d\n${PART_ENTRY_NUMBER}\nn\n${TYPE}${PART_ENTRY_NUMBER}\n${PARTOF}\n${END}\nw\n" | ${FDISK} ${DEVICE}
-
-if [ -n "${PART_ENTRY_NAME}" ]; then
-	${SGDISK} --change-name=${PART_ENTRY_NUMBER}:"${PART_ENTRY_NAME}" ${DEVICE}
+	# sgdisk speaks the device's logical sector size, so the grow is correct on
+	# 4Kn media where blockdev/udev report 512-byte units. The recreate needs the
+	# original start re-supplied and drops the attribute flags, unique GUID, type
+	# code and name: the attributes carry the legacy-BIOS-bootable flag (WIC
+	# --active) that U-Boot's distro_bootcmd scan uses to find the rootfs, and a
+	# fresh GUID strands anything referring to it by PARTUUID. Start and
+	# attributes are read here from sgdisk's prose output, which yields an empty
+	# value with a zero exit status if a field moves; name, GUID and type came
+	# from udev's key=value output above. Any unreadable value is fatal rather
+	# than "nothing to restore": exiting leaves the table untouched and this unit
+	# enabled - it disables itself only on success - so the next boot retries. A
+	# GPT name may legitimately be empty; it alone is optional.
+	PART_INFO=$(${SGDISK} --info=${PART_ENTRY_NUMBER} ${DEVICE})
+	START=$(echo "${PART_INFO}" | awk '/^First sector:/ {print $3}')
+	ATTRS=$(echo "${PART_INFO}" | awk '/^Attribute flags:/ {print $3}')
+	case "${START}" in
+		''|0|*[!0-9]*)
+			echo "E: could not read first sector of partition ${PART_ENTRY_NUMBER} on ${DEVICE}" >&2
+			exit 1
+			;;
+	esac
+	case "${ATTRS}" in
+		''|*[!0-9a-fA-F]*)
+			echo "E: could not read attribute flags of partition ${PART_ENTRY_NUMBER} on ${DEVICE}" >&2
+			exit 1
+			;;
+	esac
+	case "${PART_ENTRY_UUID}" in
+		''|*[!0-9a-fA-F-]*)
+			echo "E: could not read unique GUID of partition ${PART_ENTRY_NUMBER} on ${DEVICE}" >&2
+			exit 1
+			;;
+	esac
+	case "${PART_ENTRY_TYPE}" in
+		''|*[!0-9a-fA-F-]*)
+			echo "E: could not read type code of partition ${PART_ENTRY_NUMBER} on ${DEVICE}" >&2
+			exit 1
+			;;
+	esac
+	# One invocation: sgdisk applies every operation to a single in-memory table
+	# and writes it once, so an interruption cannot leave the partition recreated
+	# but stripped of what makes it bootable. --move-second-header comes first so
+	# ":0" sees the whole disk.
+	set -- --move-second-header \
+	       --delete=${PART_ENTRY_NUMBER} \
+	       --new=${PART_ENTRY_NUMBER}:${START}:0 \
+	       --attributes=${PART_ENTRY_NUMBER}:=:${ATTRS} \
+	       --partition-guid=${PART_ENTRY_NUMBER}:${PART_ENTRY_UUID} \
+	       --typecode=${PART_ENTRY_NUMBER}:${PART_ENTRY_TYPE}
+	if [ -n "${PART_ENTRY_NAME}" ]; then
+		set -- "$@" --change-name=${PART_ENTRY_NUMBER}:"${PART_ENTRY_NAME}"
+	fi
+	${SGDISK} "$@" ${DEVICE}
+else
+	# Use fdisk to repartition
+	# fdisk uses a ram image of the parition table until a write is performed
+	# so the sequence is to delete the partition and recreate it at the same
+	# starting point but making it the size of the available disk.
+	#
+	SIZE=$(blockdev --getsz ${DEVICE})
+	END=$((${SIZE} - 1))
+	PARTOF=$(echo "${INFO}" | grep '^ID_PART_ENTRY_OFFSET=' | cut -d'=' -f2)
+	echo -e "d\n${PART_ENTRY_NUMBER}\nn\np\n${PART_ENTRY_NUMBER}\n${PARTOF}\n${END}\nw\n" | ${FDISK} ${DEVICE}
 fi
 
 ${PARTX} -u ${DEVICE}

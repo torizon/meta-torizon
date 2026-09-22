@@ -5,10 +5,10 @@ TDX_PURPOSE ?= "Testing"
 
 # 0.0.0 is the trunk (unreleased) identity, shared by Torizon OS and
 # Common Torizon alike. When cutting a numbered release branch, override
-# these explicitly for that branch's real version (as scarthgap-7.x.y
+# these explicitly for that branch's real version (as wrynose-8.x.y
 # already does) -- otherwise OSTREE_BRANCHNAME and every deployed image
 # artifact name will carry "0" instead of the real number.
-TDX_MAJOR ?= "0"
+TDX_MAJOR ?= "8"
 TDX_MINOR ?= "0"
 TDX_PATCH ?= "0"
 

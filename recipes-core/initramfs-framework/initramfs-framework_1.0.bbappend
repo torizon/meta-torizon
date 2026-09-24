@@ -1,5 +1,7 @@
 FILESEXTRAPATHS:prepend := "${THISDIR}/files:"
 
+# NOTE: 0002-only-scan-for-block-devices.patch is branch-specific: this copy
+# targets wrynose oe-core (before d3a196f574). Do not sync it with master.
 SRC_URI += "\
     file://plymouth \
     file://kmod \

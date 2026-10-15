@@ -53,6 +53,7 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     sudo \
     systemd-analyze \
     torizon-conf \
+    torizon-polkit-rules \
     torizon-users \
     tzdata \
     usermount \

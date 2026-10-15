@@ -2,7 +2,12 @@
 
 . /usr/libexec/greenboot/greenboot-logs
 
-ROLLBACK=$(fw_printenv rollback | cut -d '=' -f 2)
+if fw_printenv rollback >/dev/null 2>&1; then
+    ROLLBACK=$(fw_printenv rollback | cut -d '=' -f 2)
+elif ls /boot/loader/entries/*+0-*.conf >/dev/null 2>&1; then
+    # systemd-boot: an entry with exhausted boot counting was rolled back
+    ROLLBACK=1
+fi
 
 # if we are in the rollback state, warn the user
 if [ "$ROLLBACK" == "1" ]; then

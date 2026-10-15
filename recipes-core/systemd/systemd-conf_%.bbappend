@@ -3,6 +3,7 @@ FILESEXTRAPATHS:prepend := "${THISDIR}/${BPN}:"
 SRC_URI += "\
     file://system.conf-torizon \
     file://system.conf-docker \
+    file://journald.conf-torizon \
 "
 
 PACKAGE_ARCH = "${MACHINE_ARCH}"
@@ -18,4 +19,7 @@ do_install:append() {
 	install -m 0644 ${S}/system.conf-docker ${D}${systemd_unitdir}/system.conf.d/20-docker.conf
 
 	sed -i "s/@@MACHINE@@/${MACHINE}/g" ${D}${systemd_unitdir}/system.conf.d/10-${BPN}.conf
+
+	# Install journald configuration snippet for Torizon
+	install -m 0644 ${S}/journald.conf-torizon ${D}${systemd_unitdir}/journald.conf.d/00-${BPN}.conf
 }

@@ -1,0 +1,38 @@
+// Restore the NetworkManager operations that members of the "torizon" group
+// could perform before polkitd was installed.
+//
+// Administrative sessions reach the device over SSH or the serial console,
+// and neither holds a seat, so polkit classifies them under allow_any --
+// not allow_inactive, and never allow_active. Both permissive branches of
+// the upstream defaults are therefore unreachable on those paths, and every
+// NetworkManager operation that used to work for a normal user starts
+// failing once an authority exists to enforce the policy.
+//
+// Scope is deliberately narrow: only the actions measured as regressed.
+// Operations that were already denied without polkitd are not listed here,
+// because granting them would be new capability rather than a restoration.
+//
+// Customers override by dropping a higher-numbered file in
+// /etc/polkit-1/rules.d/.
+//
+// Must stay ES5.1 -- duktape is not a modern engine. No arrow functions,
+// no let/const, no template literals, no Array.prototype.includes.
+
+polkit.addRule(function(action, subject) {
+    if (!subject.isInGroup("torizon")) {
+        return polkit.Result.NOT_HANDLED;
+    }
+
+    var allowed = [
+        "org.freedesktop.NetworkManager.enable-disable-wifi",
+        "org.freedesktop.NetworkManager.enable-disable-network",
+        "org.freedesktop.NetworkManager.network-control",
+        "org.freedesktop.NetworkManager.settings.modify.system"
+    ];
+
+    if (allowed.indexOf(action.id) >= 0) {
+        return polkit.Result.YES;
+    }
+
+    return polkit.Result.NOT_HANDLED;
+});

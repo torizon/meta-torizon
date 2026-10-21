@@ -46,6 +46,8 @@ kvm:x:102:
 render:x:103:
 sgx:x:104:
 debug:x:105:
+dmaheap:x:106:
+fastrpc:x:107:
 ptest:x:529:
 empower:x:533:
 systemd-coredump:x:980:

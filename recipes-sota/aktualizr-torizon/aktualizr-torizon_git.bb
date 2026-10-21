@@ -21,7 +21,7 @@ SRCREV:use-head-next = "${AUTOREV}"
 PV = "1.0+git${SRCPV}"
 
 DEPENDS = "boost curl openssl libarchive libsodium sqlite3 asn1c-native ostree"
-RDEPENDS:${PN}:class-target = "aktualizr-hwid lshw bash aktualizr-default-sec aktualizr-polling-interval aktualizr-reboot greenboot"
+RDEPENDS:${PN}:class-target = "aktualizr-hwid lshw bash aktualizr-default-sec aktualizr-polling-interval aktualizr-reboot aktualizr-rollback greenboot"
 
 inherit cmake pkgconfig systemd python3native
 
@@ -53,7 +53,6 @@ do_install:append() {
 
     install -m 0700 -d ${D}${libdir}/sota/conf.d 
     install -m 0644 ${S}/config/sota-device-cred.toml ${D}/${libdir}/sota/conf.d/20-sota-device-cred.toml
-    install -m 0644 ${S}/config/sota-uboot-env.toml ${D}/${libdir}/sota/conf.d/30-rollback.toml
     
     install -m 0644 ${UNPACKDIR}/gateway.url ${D}/${libdir}/sota/gateway.url
     install -m 0644 ${UNPACKDIR}/root.crt ${D}/${libdir}/sota/root.crt
@@ -73,7 +72,6 @@ FILES:${PN} += " \
   ${libdir}/sota/* \
   ${libdir}/sota/conf.d \
   ${libdir}/sota/conf.d/20-sota-device-cred.toml \
-  ${libdir}/sota/conf.d/30-rollback.toml \
   ${bindir}/aktualizr-info \
   ${binddir}/aktualizr-cert-provider \
   ${nonarch_libdir}/tmpfiles.d/aktualizr.conf \

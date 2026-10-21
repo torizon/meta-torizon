@@ -23,7 +23,11 @@ LICENSE = "MIT"
 IMAGE_FSTYPES = "cpio.gz"
 IMAGE_FSTYPES:remove = "wic wic.gz wic.bmap wic.vmdk wic.vdi ext4 ext4.gz teziimg"
 
-IMAGE_CLASSES:remove = "image_type_torizon image_types_ostree image_types_ota image_repo_manifest license_image qemuboot"
+# uki: on UKI-based machines this initramfs is embedded in the UKI of the
+# root filesystem image, so it must not be wrapped into a UKI itself
+# (uki.bbclass makes do_uki depend on ${INITRAMFS_IMAGE}:do_image_complete,
+# i.e. on this very image).
+IMAGE_CLASSES:remove = "image_type_torizon image_types_ostree image_types_ota image_repo_manifest license_image qemuboot uki"
 
 # avoid circular dependencies
 EXTRA_IMAGEDEPENDS = ""

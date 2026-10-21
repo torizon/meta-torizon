@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# Nothing to clean up when there is no readable bootloader environment (e.g.
+# systemd-boot machines, which roll back through boot counting instead)
+fw_printenv upgrade_available >/dev/null 2>&1 || exit 0
+
 UPGRADE_AVAILABLE=$(fw_printenv upgrade_available | cut -d '=' -f 2)
 DEVICE_PROVISIONED=$(test -e /var/sota/import/pkey.pem -o -e /var/sota/import/director/root.json && echo '1')
 

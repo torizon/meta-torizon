@@ -54,6 +54,11 @@ pkg_postinst:${PN}-networkd:append () {
 	fi
 }
 
+# This allows for udevd automounting with mounts accessible to all.
+do_configure:prepend() {
+    sed -i '/PrivateMounts=yes/d' ${S}/units/systemd-udevd.service.in
+}
+
 do_install:append() {
     if ${@bb.utils.contains('FILESYSTEM_PERMS_TABLES', 'files/fs-perms-volatile-log.txt', 'true', 'false', d)}; then
         sed -i '/^d \/var\/log /d' ${D}${nonarch_libdir}/tmpfiles.d/var.conf

@@ -3,7 +3,6 @@
 PACKAGE_CLASSES ?= "package_ipk"
 
 require conf/distro/poky.conf
-require conf/distro/include/arm-defaults.inc
 require conf/distro/include/versioning.inc
 require conf/distro/include/base-distro.inc
 require conf/distro/include/tdx-bsp.inc
@@ -15,7 +14,7 @@ IMAGE_CLASSES:remove = "image_type_tezi"
 DISTROOVERRIDES .= ":torizon-distro"
 
 # Toradex specific classes
-INHERIT += "toradex-sanity toradex-mirrors"
+INHERIT += "toradex-sanity"
 
 # We do not need teziimg, ota-ext4 or wic images by default
 IMAGE_FSTYPES_REMOVE ?= "ota-ext4 wic wic.gz wic.bmap wic.xz"

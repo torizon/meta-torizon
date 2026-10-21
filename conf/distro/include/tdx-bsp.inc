@@ -1,4 +1,4 @@
-# Vendor identity (was inherited from meta-toradex-distro's tdx-base.inc)
+# Vendor identity
 TARGET_VENDOR = "-tdx"
 SDK_VENDOR = "-tdxsdk"
 

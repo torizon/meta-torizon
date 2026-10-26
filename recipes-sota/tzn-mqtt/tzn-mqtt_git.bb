@@ -9,7 +9,7 @@ SRC_URI += " \
     file://tzn-mqtt.service \
 "
 
-SRCREV = "939273473fd5b9d85278a43a949627fab0699456"
+SRCREV = "452f6c710e5878a98bb775b9ffa57a7498c26c1e"
 SRCREV:use-head-next = "${AUTOREV}"
 
 PV = "0.0+git${SRCPV}"

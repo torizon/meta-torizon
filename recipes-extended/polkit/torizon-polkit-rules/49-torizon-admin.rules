@@ -1,0 +1,19 @@
+// Make polkit agree with sudo about who is an administrator.
+//
+// polkit's own 50-default.rules nominates "unix-group:wheel", a group that
+// does not exist on Torizon. With no valid administrative identity polkit
+// falls back to root, so every auth_admin action prompts for the root
+// password -- which the torizon user does not have.
+//
+// The torizon user is already in the sudo group and can therefore run the
+// same operations through sudo with its own password. This rule removes that
+// inconsistency; it grants no capability that sudo does not already grant.
+//
+// Loaded before 50-default.rules: polkit uses the first addAdminRule that
+// returns a non-empty list, so the file name must keep sorting ahead of it.
+//
+// Must stay ES5.1 -- duktape is not a modern engine.
+
+polkit.addAdminRule(function(action, subject) {
+    return ["unix-group:sudo"];
+});

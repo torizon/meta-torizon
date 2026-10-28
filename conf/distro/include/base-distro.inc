@@ -34,7 +34,7 @@ IMAGE_FSTYPES:remove:sota = "${IMAGE_FSTYPES_REMOVE}"
 IMAGE_BOOT_FILES = ""
 IMAGE_BOOT_FILES_REMOVE:sota = "boot.scr-${MACHINE};boot.scr overlays.txt overlays/*;overlays/"
 
-DISTRO_FEATURES:append = " virtualization stateless-system apparmor"
+DISTRO_FEATURES:append = " virtualization stateless-system apparmor polkit"
 DISTRO_FEATURES_REMOVE ?= "3g alsa irda pcmcia nfc ldconfig pulseaudio wayland x11 ptest multiarch vulkan"
 DISTRO_FEATURES:remove = "${DISTRO_FEATURES_REMOVE}"
 

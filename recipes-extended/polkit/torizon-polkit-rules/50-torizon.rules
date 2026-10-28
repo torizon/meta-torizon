@@ -1,0 +1,56 @@
+// Restore NetworkManager operations that were unrestricted before polkit
+// joined DISTRO_FEATURES. NetworkManager picks its PACKAGECONFIG from
+// DISTRO_FEATURES, so it used to be built -Dpolkit=false, which makes it
+// authorize every operation for any non-root uid. It now enforces the
+// upstream permission matrix instead.
+//
+// Administrative sessions reach the device over SSH or the serial console,
+// and neither holds a seat, so polkit classifies them under allow_any --
+// not allow_inactive, and never allow_active. Both permissive branches of
+// the upstream defaults are therefore unreachable on those paths.
+//
+// Scope is deliberately narrow: the actions the default workflow uses, plus
+// WWAN control, since this layer enables ModemManager and PPP. Of the eleven
+// actions left out, six carry no allow_any element and so need root -- WiMAX,
+// statistics, connectivity check, sleep-wake and the two hotspot sharing
+// actions. The remaining five are auth_admin or auth_self, which a member of
+// the sudo group can satisfy by authenticating; see 49-torizon-admin.rules.
+//
+// The grant is also narrower than the old behaviour in a second way, on
+// purpose: it is keyed on the "torizon" group, so a user outside that group,
+// or a container that mounts the system bus and runs at a different uid, is
+// denied where it previously was not.
+//
+// Customers can override this policy by installing a rule that sorts before
+// this file in /etc/polkit-1/rules.d/, for example 40-customer.rules.
+// A file named 50-torizon.rules in /etc also takes precedence over the file
+// with the same name in /usr.
+//
+// Must stay ES5.1 -- duktape is not a modern engine. No arrow functions,
+// no let/const, no template literals, no Array.prototype.includes.
+
+polkit.addRule(function(action, subject) {
+    if (!subject.isInGroup("torizon")) {
+        return polkit.Result.NOT_HANDLED;
+    }
+
+    // Two entries are less obvious than the rest. wifi.scan is here because
+    // scanning is discovery rather than configuration -- without it
+    // "nmcli device wifi rescan" fails with "not authorized". And
+    // enable-disable-wwan is here because this layer builds NetworkManager
+    // with modemmanager and ppp, so "nmcli radio wwan" is a supported path.
+    var allowed = [
+        "org.freedesktop.NetworkManager.enable-disable-wifi",
+        "org.freedesktop.NetworkManager.enable-disable-network",
+        "org.freedesktop.NetworkManager.network-control",
+        "org.freedesktop.NetworkManager.settings.modify.system",
+        "org.freedesktop.NetworkManager.wifi.scan",
+        "org.freedesktop.NetworkManager.enable-disable-wwan"
+    ];
+
+    if (allowed.indexOf(action.id) >= 0) {
+        return polkit.Result.YES;
+    }
+
+    return polkit.Result.NOT_HANDLED;
+});

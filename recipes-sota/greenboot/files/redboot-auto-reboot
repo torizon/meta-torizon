@@ -2,6 +2,25 @@
 
 . /usr/libexec/greenboot/greenboot-logs
 
+# systemd-boot: an entry still being assessed has a boot counter
+# (LoaderBootCountPath is set). Reboot, so that systemd-boot counts it down
+# and falls back to the previous deployment. If the booted entry has no
+# tries left and no other entry does either (e.g. a freshly flashed
+# deployment), systemd-boot would boot it again: fall through instead of
+# rebooting forever.
+BOOTCOUNT_EFIVAR=/sys/firmware/efi/efivars/LoaderBootCountPath-4a67b082-0a4c-41cf-b6c7-440b29bb8c4f
+if [ -e "$BOOTCOUNT_EFIVAR" ]; then
+    # UTF-16 path after the 4-byte attributes, e.g. \loader\entries\ostree-1+0-3.conf
+    BOOTED_ENTRY=$(tail -c +5 "$BOOTCOUNT_EFIVAR" | tr -d '\0' | sed 's#.*\\##')
+    if ! echo "$BOOTED_ENTRY" | grep -q '+0-[0-9]*\.conf$' || \
+       ls /boot/loader/entries/*.conf 2>/dev/null | grep -v -e "/$BOOTED_ENTRY\$" -e '+0-[0-9]*\.conf$' | grep -q .; then
+        log_to_console "Update error: boot checks failed (boot counting). Rebooting..."
+        log_rollback_info
+        reboot
+        exit 0
+    fi
+fi
+
 # make sure links for storage devices are available for a proper fw_printenv usage
 udevadm settle -t 30
 

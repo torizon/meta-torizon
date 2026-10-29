@@ -16,12 +16,15 @@ SRC_URI = "\
     file://greenboot-logs \
     file://00_cleanup_uboot_vars.sh \
     file://01_log_rollback_info.sh \
+    file://greenboot-task-runner-after-bless-boot.conf \
     "
 
 SRCREV = "0777806c88ed4f806484bc9d36d198a667576b6f"
 PV = "0.15.9+git${SRCPV}"
 
 RDEPENDS:${PN} = "bash"
+
+FILES:${PN} += "${systemd_system_unitdir}/greenboot-task-runner.service.d"
 
 inherit systemd
 
@@ -46,6 +49,9 @@ do_install() {
     install -m 644 ${S}/usr/lib/systemd/system/redboot-auto-reboot.service ${D}/${systemd_system_unitdir}
     install -m 644 ${S}/usr/lib/systemd/system/redboot.target ${D}/${systemd_system_unitdir}
     install -m 644 ${UNPACKDIR}/greenboot.target ${D}/${systemd_system_unitdir}
+    install -d ${D}${systemd_system_unitdir}/greenboot-task-runner.service.d
+    install -m 644 ${UNPACKDIR}/greenboot-task-runner-after-bless-boot.conf \
+        ${D}${systemd_system_unitdir}/greenboot-task-runner.service.d/after-bless-boot.conf
 
     # helper scripts
     install -d ${D}${libexecdir}/greenboot

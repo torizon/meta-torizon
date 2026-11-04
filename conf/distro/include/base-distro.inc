@@ -10,6 +10,14 @@ SDK_VERSION = "${DISTRO_VERSION}"
 
 IMAGE_CLASSES:remove = "image_types_fsl"
 
+# Keep build credentials out of the deployed testdata.json
+IMAGE_CLASSES:append = " image_testdata_redact"
+# populate_sdk_ext merges site.conf, auto.conf, toolcfg.conf and local.conf
+# into the eSDK local.conf; this filters that result. It covers the default
+# mode only, SDK_DERIVATIVE = "1" copies site.conf, auto.conf and local.conf
+# as is.
+ESDK_LOCALCONF_REMOVE:append = " NVDCVE_API_KEY"
+
 # Torizon machine specific overrides
 INHERIT += "torizon"
 

@@ -23,11 +23,11 @@
 //
 // Customers can override this policy by installing a rule that sorts before
 // this file in /etc/polkit-1/rules.d/, for example 40-customer.rules.
-// A file named 50-torizon.rules in /etc also takes precedence over the file
-// with the same name in /usr.
+// A file named 50-torizon.rules in /etc does not replace this one: both are
+// loaded, and the one in /etc runs first.
 //
 // Must stay ES5.1 -- duktape is not a modern engine. No arrow functions,
-// no let/const, no template literals, no Array.prototype.includes.
+// no let, no template literals, no Array.prototype.includes.
 
 polkit.addRule(function(action, subject) {
     if (!subject.isInGroup("torizon")) {

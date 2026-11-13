@@ -47,7 +47,6 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     ostree-devicetree-overlays \
     packagegroup-core-full-cmdline-multiuser \
     packagegroup-core-full-cmdline-utils \
-    parted \
     rsync \
     sshfs-fuse \
     sudo \
@@ -57,6 +56,7 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     torizon-users \
     tzdata \
     usermount \
+    util-linux-partx \
     vim-tiny \
     wireguard-tools \
     zram \

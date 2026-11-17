@@ -7,8 +7,9 @@ SRC_URI += "\
     file://99-disable-uap.conf \
 "
 
-# Depend on libedit as it has a more friendly license than readline (GPLv3)
-DEPENDS += "libedit"
+# nmcli's interactive mode: libedit instead of readline (GPL-3.0-or-later)
+PACKAGECONFIG:remove = "readline"
+PACKAGECONFIG:append = " libedit"
 
 PACKAGECONFIG:remove = "dnsmasq"
 

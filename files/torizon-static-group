@@ -51,6 +51,7 @@ fastrpc:x:107:
 ptest:x:529:
 empower:x:533:
 systemd-coredump:x:980:
+rac:x:970:
 teeclnt:x:982:
 tss:x:983:
 systemd-bus-proxy:x:984:

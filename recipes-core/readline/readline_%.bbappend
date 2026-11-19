@@ -1,7 +1,6 @@
-FILESEXTRAPATHS:prepend := "${THISDIR}/${PN}:"
-
-SRC_URI:append = " file://inputrc.torizon"
-
+# /etc/inputrc is shipped by base-files, so bash keeps its key bindings
+# on images without readline (GPL-3.0-or-later)
 do_install:append () {
-	install -m 0644 ${UNPACKDIR}/inputrc.torizon ${D}${sysconfdir}/inputrc
+	rm -f ${D}${sysconfdir}/inputrc
 }
+CONFFILES:${PN}:remove = "${sysconfdir}/inputrc"

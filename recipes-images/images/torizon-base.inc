@@ -48,7 +48,6 @@ CORE_IMAGE_BASE_INSTALL:append = " \
     packagegroup-core-full-cmdline-multiuser \
     packagegroup-core-full-cmdline-utils \
     parted \
-    rsync \
     sshfs-fuse \
     sudo \
     systemd-analyze \

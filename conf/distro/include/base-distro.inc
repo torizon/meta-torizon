@@ -87,10 +87,9 @@ BUILDHISTORY_COMMIT = "1"
 
 IMAGE_LINGUAS ?= "en-us"
 
-# Some Toradex recipes like linux-toradex, u-boot-toradex,
-# device-tree-overlays are appending SCM hashes to PV, version
-# numbers going backwards are not a problem as we don't provide
-# binary feeds.
+# Some Toradex recipes like linux-toradex and u-boot-toradex are
+# appending SCM hashes to PV, version numbers going backwards are not
+# a problem as we don't provide binary feeds.
 #
 # This avoids some annoying errors as follows:
 # | QA Issue: Package version went backwards which would break package feeds

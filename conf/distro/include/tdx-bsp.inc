@@ -12,8 +12,11 @@ DISTRO_FEATURES:append = " opencl pam systemd-resolved tpm2 pni-names"
 PREFERRED_PROVIDER_u-boot-fw-utils = "libubootenv"
 PREFERRED_RPROVIDER_u-boot-fw-utils = "libubootenv"
 
-# Default virtual/dtb provider for NXP i.MX8/i.MX9 vendor-BSP builds.
-PREFERRED_PROVIDER_virtual/dtb ?= "device-tree-overlays-imx"
+# meta-toradex-bsp builds the devicetree overlays from the kernel tree, so they are in KERNEL_DEVICETREE and
+# with it in OSTREE_DEVICETREE, and its overlays-txt recipe deploys overlays.txt with the default boot
+# overlays (TEZI_EXTERNAL_KERNEL_DEVICETREE_BOOT): install that one, also for FIT images (e.g. signed builds).
+OSTREE_OVERLAYS_TXT ?= "${DEPLOY_DIR_IMAGE}/overlays.txt"
+OSTREE_DTB_DEPENDS:append = " overlays-txt:do_deploy"
 
 PREFERRED_PROVIDER_opencl-headers:imxgpu      = "imx-gpu-viv"
 PREFERRED_PROVIDER_opencl-clhpp:imxgpu        = "imx-gpu-viv"

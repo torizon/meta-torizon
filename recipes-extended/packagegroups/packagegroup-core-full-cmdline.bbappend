@@ -10,6 +10,7 @@ RDEPENDS:packagegroup-core-full-cmdline-utils:remove = "\
     mc-helpers \
     mc-helpers-perl \
     mc-shell \
+    tar \
 "
 
 RDEPENDS:packagegroup-core-full-cmdline-multiuser:remove = "\
